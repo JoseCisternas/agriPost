@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { use } from 'chai';
 import Post from './Post';
 import PostForm from './PostForm';
+import SearchBar from './SearchBar';
 
 
 function Posts() {
@@ -13,6 +14,7 @@ function Posts() {
   const dispatch = useDispatch();
 
   const [postToEdit,setPostToEdit] = useState(0);
+  const [postToSearch,setPostToSearch] = useState('');
 
   useEffect(() => {
     dispatch(fetchPostsAsync());
@@ -36,29 +38,31 @@ function Posts() {
   if (status !== Statuses.UpToDate) {
     contents = <div>{status}</div>
   } else {
-    
     if (posts.length > 0)
-  
-      postContent = posts.map( function(post) {
-        return (
+      postContent = posts.filter((post)=>{
+        return postToSearch.toLowerCase() === '' ? true : post.post_name.toLowerCase().includes(postToSearch.toLowerCase())
+      }).map( post => {
+        let postContent;
+          postContent= (
           <Post
             dispatch= {dispatch}
             post = {post}
             toggleEditForm = {()=> toggleEditForm(post.id)}
             postToEdit={postToEdit}
             submitEdit = {submitEdit}
-            />
-          
-        )
-    
-         
+            /> 
+          )
+        return postContent
       }) 
      
     contents = 
     (
-      
     <div>
-      <PostForm/>
+      <SearchBar
+        dispatch = {dispatch}
+        postToSearch = {postToSearch}
+        setPostToSearch = {setPostToSearch}
+      />
       <table className="table">
         <thead>
           <tr>
@@ -71,7 +75,8 @@ function Posts() {
         <tbody>  
         {postContent}     
         </tbody>
-        </table> 
+      </table> 
+      <PostForm/>
     </div>)
   }
 
