@@ -1,5 +1,6 @@
 class PostsController < ApplicationController
 
+
     def index
         posts = Post.all
         render json: posts
@@ -20,8 +21,10 @@ class PostsController < ApplicationController
     def destroy
         posts = Post.find_by(id: params[:id])
         posts.destroy
+        posts = Post.all
+        render json: posts
     end  
     private  def posts_params
-        params.require(:posts_note).permit(:id, :post_name, :post_description)
+        params.require(:post).permit(:id, :post_name, :post_description)
     end
 end
